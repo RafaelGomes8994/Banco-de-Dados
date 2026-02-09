@@ -8,7 +8,7 @@ SET search_path TO steam;
 
 -- Limpeza para reinicializacao do ambiente de testes
 DROP TABLE IF EXISTS Jogos_has_Genero, DLC, Software, RequisitoSistema, Conquista, 
-Nota_Fiscal, Compra, Biblioteca, Avaliacao, Publicadora, Desenvolvedora, 
+Nota_Fiscal, Compra, Biblioteca,Biblioteca_has_Produto, Avaliacao, Publicadora, Desenvolvedora, 
 Jogos, Produto, Genero, Usuario, Carteira CASCADE;
 
 -- -----------------------------------------------------------------------------
@@ -124,6 +124,19 @@ CREATE TABLE IF NOT EXISTS Biblioteca (
   status_instalacao BOOLEAN DEFAULT FALSE,
   CONSTRAINT fk_Biblioteca_Usuario FOREIGN KEY (id_usuario)
     REFERENCES Usuario (id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+);
+-- -----------------------------------------------------------------------------
+-- RELACIONAMENTO N:M: CONTEÚDO DA BIBLIOTECA
+-- -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS Biblioteca_has_Produto (
+  id_usuario INT NOT NULL,
+  id_produto INT NOT NULL,
+  PRIMARY KEY (id_usuario, id_produto), -- Chave composta garante que o jogo não se repita na mesma conta
+  CONSTRAINT fk_Biblioteca_Produto_User FOREIGN KEY (id_usuario)
+    REFERENCES Biblioteca (id_usuario) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_Biblioteca_Produto_Prod FOREIGN KEY (id_produto)
+    REFERENCES Produto (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Compra (

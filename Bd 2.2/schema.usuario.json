@@ -14,7 +14,7 @@
         "required": ["moeda", "saldo_atual"],
         "additionalProperties": false,
         "properties": {
-          "moeda": { "bsonType": "string", "maxLength": 16 },
+          "moeda": { "bsonType": "string" },
           "saldo_atual": { "bsonType": "double", "minimum": 0 }
         }
       },
