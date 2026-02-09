@@ -1,0 +1,42 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["tipo", "titulo", "preco", "data_lancamento", "generos", "idiomas", "desenvolvedora", "publicadora"],
+    "additionalProperties": false,
+    "properties": {
+      "_id": { "bsonType": "objectId" },
+      "tipo": { "enum": ["Jogo", "Software", "DLC"] },
+      "titulo": { "bsonType": "string", "maxLength": 100 },
+      "preco": { "bsonType": "double", "minimum": 0 },
+      "descricao": { "bsonType": "string" },
+      "data_lancamento": { "bsonType": "date" },
+      "desenvolvedora": { "bsonType": "string" },
+      "publicadora": { "bsonType": "string" },
+      "generos": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "idiomas": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "especificacoes": {
+        "bsonType": "object",
+        "properties": {
+          "suporte_controle": { "bsonType": "bool" },
+          "faixa_etaria": { "bsonType": "string" },
+          "versao_software": { "bsonType": "string" },
+          "requer_jogo_base": { "bsonType": "bool" }
+        }
+      },
+      "conquistas": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["titulo", "descricao", "imagem_icone"],
+          "additionalProperties": false,
+          "properties": {
+            "titulo": { "bsonType": "string" },
+            "descricao": { "bsonType": "string" },
+            "imagem_icone": { "bsonType": "binData" }
+          }
+        }
+      },
+      "requisitos": { "bsonType": "object" }
+    }
+  }
+}

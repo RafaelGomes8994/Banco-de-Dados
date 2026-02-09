@@ -1,0 +1,36 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["nome_completo", "email", "senha", "nivel", "carteira", "biblioteca"],
+    "additionalProperties": false,
+    "properties": {
+      "_id": { "bsonType": "objectId" },
+      "nome_completo": { "bsonType": "string", "maxLength": 100 },
+      "email": { "bsonType": "string", "pattern": "^.+@.+$" },
+      "senha": { "bsonType": "string", "maxLength": 32 },
+      "nivel": { "bsonType": "int", "minimum": 1 },
+      "carteira": {
+        "bsonType": "object",
+        "required": ["moeda", "saldo_atual"],
+        "additionalProperties": false,
+        "properties": {
+          "moeda": { "bsonType": "string", "maxLength": 16 },
+          "saldo_atual": { "bsonType": "double", "minimum": 0 }
+        }
+      },
+      "biblioteca": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["produto_id", "status_instalacao"],
+          "additionalProperties": false,
+          "properties": {
+            "produto_id": { "bsonType": "objectId" },
+            "tempo_jogado": { "bsonType": ["date", "null"] },
+            "status_instalacao": { "bsonType": "bool" }
+          }
+        }
+      }
+    }
+  }
+}
