@@ -13,6 +13,7 @@
         "bsonType": "object",
         "required": ["moeda", "saldo_atual"],
         "additionalProperties": false,
+        "description": "Carteira embarcada - cardinalidade 1:1 com Usuario",
         "properties": {
           "moeda": { "bsonType": "string" },
           "saldo_atual": { "bsonType": "double", "minimum": 0 }
@@ -20,13 +21,14 @@
       },
       "biblioteca": {
         "bsonType": "array",
+        "description": "Biblioteca embarcada - cardinalidade N:M Usuario-Produto com referências por produto_id",
         "items": {
           "bsonType": "object",
           "required": ["produto_id", "status_instalacao"],
           "additionalProperties": false,
           "properties": {
             "produto_id": { "bsonType": "objectId" },
-            "tempo_jogado": { "bsonType": ["date", "null"] },
+            "tempo_jogado": { "bsonType": ["int", "null"], "description": "Tempo em minutos" },
             "status_instalacao": { "bsonType": "bool" }
           }
         }

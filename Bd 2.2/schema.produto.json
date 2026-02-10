@@ -10,9 +10,21 @@
       "preco": { "bsonType": "double", "minimum": 0 },
       "descricao": { "bsonType": "string" },
       "data_lancamento": { "bsonType": "date" },
-      "desenvolvedora": { "bsonType": "string" },
-      "publicadora": { "bsonType": "string" },
-      "generos": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "desenvolvedora": { 
+        "bsonType": "string",
+        "maxLength": 255,
+        "description": "Referência para Nome_empresa da coleção Desenvolvedora (cardinalidade 1:N)"
+      },
+      "publicadora": { 
+        "bsonType": "string",
+        "maxLength": 255,
+        "description": "Referência para Nome_Publicadora da coleção Publicadora (cardinalidade 1:N)"
+      },
+      "generos": { 
+        "bsonType": "array", 
+        "items": { "bsonType": "string" },
+        "description": "Referências para nomes dos gêneros da coleção Genero (cardinalidade N:M)"
+      },
       "idiomas": { "bsonType": "array", "items": { "bsonType": "string" } },
       "especificacoes": {
         "bsonType": "object",
@@ -20,7 +32,9 @@
           "suporte_controle": { "bsonType": "bool" },
           "faixa_etaria": { "bsonType": "string" },
           "versao_software": { "bsonType": "string" },
-          "requer_jogo_base": { "bsonType": "bool" }
+          "tipo_licenca": { "bsonType": "string" },
+          "requer_jogo_base": { "bsonType": "bool" },
+          "tamanho_download": { "bsonType": "string" }
         }
       },
       "conquistas": {
@@ -37,6 +51,32 @@
         }
       },
       "requisitos": { "bsonType": "object" }
-    }
+    },
+    "oneOf": [
+      {
+        "properties": {
+          "tipo": { "enum": ["Jogo"] },
+          "especificacoes": {
+            "required": ["suporte_controle", "faixa_etaria"]
+          }
+        }
+      },
+      {
+        "properties": {
+          "tipo": { "enum": ["Software"] },
+          "especificacoes": {
+            "required": ["versao_software", "tipo_licenca"]
+          }
+        }
+      },
+      {
+        "properties": {
+          "tipo": { "enum": ["DLC"] },
+          "especificacoes": {
+            "required": ["requer_jogo_base"]
+          }
+        }
+      }
+    ]
   }
 }

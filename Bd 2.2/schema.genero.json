@@ -1,0 +1,15 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["nome"],
+    "additionalProperties": false,
+    "properties": {
+      "_id": { "bsonType": "objectId" },
+      "nome": { 
+        "bsonType": "string",
+        "maxLength": 255,
+        "description": "Nome único do gênero"
+      }
+    }
+  }
+}

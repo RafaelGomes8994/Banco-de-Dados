@@ -1,0 +1,25 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["Nome_empresa", "pais_sede"],
+    "additionalProperties": false,
+    "properties": {
+      "_id": { "bsonType": "objectId" },
+      "Nome_empresa": { 
+        "bsonType": "string",
+        "maxLength": 255,
+        "description": "Nome único da empresa desenvolvedora"
+      },
+      "pais_sede": { 
+        "bsonType": "string",
+        "maxLength": 45,
+        "description": "País onde a desenvolvedora é sediada"
+      },
+      "website": { 
+        "bsonType": ["string", "null"],
+        "maxLength": 100,
+        "description": "Site oficial da desenvolvedora"
+      }
+    }
+  }
+}

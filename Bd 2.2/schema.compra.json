@@ -13,11 +13,12 @@
       "data_compra": { "bsonType": "date" },
       "nota_fiscal": {
         "bsonType": "object",
-        "required": ["numero_serie", "valor_total"],
+        "required": ["numero_serie", "valor_total", "data_emissao"],
         "additionalProperties": false,
         "properties": {
           "numero_serie": { "bsonType": "int" },
-          "valor_total": { "bsonType": "double" }
+          "valor_total": { "bsonType": "double" },
+          "data_emissao": { "bsonType": "date" }
         }
       }
     }

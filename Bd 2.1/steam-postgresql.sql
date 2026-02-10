@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS Usuario (
     REFERENCES Carteira (id_carteira) ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
+ALTER TABLE Usuario
+  ADD CONSTRAINT uq_Usuario_Carteira UNIQUE (id_carteira);
+
 -- -----------------------------------------------------------------------------
 -- CATALOGO E CATEGORIZACAO
 -- -----------------------------------------------------------------------------
@@ -46,7 +49,8 @@ CREATE TABLE IF NOT EXISTS Produto (
   Titulo VARCHAR(100) NOT NULL,
   preco NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
   Descricao TEXT NOT NULL, 
-  Data_lancamento DATE NOT NULL
+  Data_lancamento DATE NOT NULL,
+  Nome_Publicadora VARCHAR(255) NOT NULL
 );
 
 -- -----------------------------------------------------------------------------
@@ -57,9 +61,12 @@ CREATE TABLE IF NOT EXISTS Jogos (
   id_produto INT PRIMARY KEY,
   Suporte_Controle BOOLEAN NOT NULL DEFAULT FALSE, 
   Faixa_etaria VARCHAR(45) NOT NULL,
-  idiomas VARCHAR(45)[] NOT NULL, 
+  idiomas VARCHAR(45)[] NOT NULL,
+  Nome_empresa VARCHAR(255) NOT NULL,
   CONSTRAINT fk_Jogos_Produto FOREIGN KEY (id_produto)
-    REFERENCES Produto (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
+    REFERENCES Produto (id_produto) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_Jogos_Desenvolvedora FOREIGN KEY (Nome_empresa)
+    REFERENCES Desenvolvedora (Nome_empresa) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Software (
@@ -85,19 +92,17 @@ CREATE TABLE IF NOT EXISTS DLC (
 CREATE TABLE IF NOT EXISTS Desenvolvedora (
   Nome_empresa VARCHAR(255) PRIMARY KEY,
   pais_sede VARCHAR(45) NOT NULL,
-  website VARCHAR(100), -- Null-able
-  id_jogo INT NOT NULL,
-  CONSTRAINT fk_Desenvolvedora_Jogos FOREIGN KEY (id_jogo)
-    REFERENCES Jogos (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
+  website VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS Publicadora (
   Nome_Publicadora VARCHAR(255) PRIMARY KEY,
-  contato VARCHAR(100) NOT NULL,
-  id_produto INT NOT NULL,
-  CONSTRAINT fk_Publicadora_Produto FOREIGN KEY (id_produto)
-    REFERENCES Produto (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
+  contato VARCHAR(100) NOT NULL
 );
+
+ALTER TABLE Produto
+  ADD CONSTRAINT fk_Produto_Publicadora FOREIGN KEY (Nome_Publicadora)
+    REFERENCES Publicadora (Nome_Publicadora) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- -----------------------------------------------------------------------------
 -- INTERACAO E AUDITORIA
@@ -117,10 +122,10 @@ CREATE TABLE IF NOT EXISTS Avaliacao (
     REFERENCES Jogos (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- tempo_jogado como TIMESTAMP e Null-able
+-- tempo_jogado como INTERVAL para representar duracao
 CREATE TABLE IF NOT EXISTS Biblioteca (
   id_usuario INT PRIMARY KEY,
-  tempo_jogado TIMESTAMP NULL, 
+  tempo_jogado INTERVAL NULL, 
   status_instalacao BOOLEAN DEFAULT FALSE,
   CONSTRAINT fk_Biblioteca_Usuario FOREIGN KEY (id_usuario)
     REFERENCES Usuario (id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
@@ -157,10 +162,16 @@ CREATE TABLE IF NOT EXISTS Nota_Fiscal (
   id_nota SERIAL PRIMARY KEY,
   numero_serie INT NOT NULL,
   valor_total NUMERIC(10, 2) NOT NULL,
+  data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   id_compra INT NOT NULL UNIQUE, 
   CONSTRAINT fk_Nota_Fiscal_Compra FOREIGN KEY (id_compra)
     REFERENCES Compra (id_compra) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE SEQUENCE IF NOT EXISTS nota_fiscal_numero_serie_seq;
+
+ALTER TABLE Nota_Fiscal
+  ALTER COLUMN numero_serie SET DEFAULT nextval('nota_fiscal_numero_serie_seq');
 
 -- -----------------------------------------------------------------------------
 -- DETALHES TECNICOS E PROGRESSAO
@@ -189,7 +200,6 @@ CREATE TABLE IF NOT EXISTS Conquista (
 );
 
 CREATE TABLE IF NOT EXISTS RequisitoSistema (
-  id_requisito SERIAL PRIMARY KEY,
   CPU VARCHAR(100),
   GPU VARCHAR(100),
   Memoria_ram VARCHAR(45),
@@ -197,6 +207,7 @@ CREATE TABLE IF NOT EXISTS RequisitoSistema (
   sistema_operacional VARCHAR(45) NOT NULL,
   tipo VARCHAR(45) NOT NULL CHECK (tipo IN ('Minimo', 'Recomendado')),
   id_jogo INT NOT NULL,
+  PRIMARY KEY (id_jogo, tipo),
   CONSTRAINT fk_Requisito_Jogos FOREIGN KEY (id_jogo)
     REFERENCES Jogos (id_produto) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -207,6 +218,31 @@ CREATE TABLE IF NOT EXISTS RequisitoSistema (
 
 CREATE INDEX IF NOT EXISTS idx_usuario_email ON Usuario(email);
 CREATE INDEX IF NOT EXISTS idx_compra_data ON Compra(data_compra);
+
+CREATE OR REPLACE FUNCTION cria_biblioteca()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO Biblioteca (id_usuario) VALUES (NEW.id_usuario);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_usuario_biblioteca
+AFTER INSERT ON Usuario
+FOR EACH ROW EXECUTE FUNCTION cria_biblioteca();
+
+CREATE OR REPLACE FUNCTION cria_nota_fiscal()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO Nota_Fiscal (valor_total, id_compra)
+  VALUES (NEW.valor_pago, NEW.id_compra);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_compra_nota
+AFTER INSERT ON Compra
+FOR EACH ROW EXECUTE FUNCTION cria_nota_fiscal();
 
 DO $$
 BEGIN
