@@ -92,13 +92,13 @@ CREATE TABLE IF NOT EXISTS Jogos (
   CONSTRAINT fk_Jogos_Produto1
     FOREIGN KEY (Produto_id_produto)
     REFERENCES Produto (id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT fk_Jogos_Desenvolvedora1
     FOREIGN KEY (Desenvolvedora_Nome_empresa)
     REFERENCES Desenvolvedora (Nome_empresa)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_Jogos_Desenvolvedora ON Jogos(Desenvolvedora_Nome_empresa);
@@ -202,8 +202,8 @@ CREATE TABLE IF NOT EXISTS Conquista (
   CONSTRAINT fk_Conquista_Jogos1
     FOREIGN KEY (Jogos_Produto_id_produto)
     REFERENCES Jogos (Produto_id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_Conquista_Jogos ON Conquista(Jogos_Produto_id_produto);
@@ -223,8 +223,8 @@ CREATE TABLE IF NOT EXISTS RequisitoSistema (
   CONSTRAINT fk_RequisitoSistema_Jogos1
     FOREIGN KEY (Jogos_Produto_id_produto)
     REFERENCES Jogos (Produto_id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_RequisitoSistema_Jogos ON RequisitoSistema(Jogos_Produto_id_produto);
@@ -239,8 +239,8 @@ CREATE TABLE IF NOT EXISTS Software (
   CONSTRAINT fk_Software_Produto1
     FOREIGN KEY (Produto_id_produto)
     REFERENCES Produto (id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_Software_Produto ON Software(Produto_id_produto);
@@ -256,13 +256,13 @@ CREATE TABLE IF NOT EXISTS DLC (
   CONSTRAINT fk_DLC_Produto1
     FOREIGN KEY (Produto_id_produto)
     REFERENCES Produto (id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT fk_DLC_Jogos1
     FOREIGN KEY (id_jogo_base)
     REFERENCES Jogos (Produto_id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_DLC_Jogos ON DLC(id_jogo_base);
@@ -277,13 +277,13 @@ CREATE TABLE IF NOT EXISTS Jogos_has_Genero (
   CONSTRAINT fk_Jogos_has_Genero_Jogos1
     FOREIGN KEY (Jogos_Produto_id_produto)
     REFERENCES Jogos (Produto_id_produto)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT fk_Jogos_has_Genero_Genero1
     FOREIGN KEY (Genero_id_genero)
     REFERENCES Genero (id_genero)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_Jogos_has_Genero_Genero ON Jogos_has_Genero(Genero_id_genero);
