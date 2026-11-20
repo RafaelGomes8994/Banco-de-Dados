@@ -1,13 +1,14 @@
+import os
 import psycopg2
 import random 
 from psycopg2 import OperationalError
 from datetime import datetime
 
-DB_HOST = "steamdb.cximu3gskw3g.us-east-1.rds.amazonaws.com"
-DB_NAME = "postgres"
-DB_USER = "professor"
-DB_PASS = "professor"
-DB_PORT = "5432"
+DB_HOST = os.getenv("DB_HOST", "steamdb.cximu3gskw3g.us-east-1.rds.amazonaws.com")
+DB_NAME = os.getenv("DB_NAME", "postgres")
+DB_USER = os.getenv("DB_USER", "professor")
+DB_PASS = os.getenv("DB_PASS", "professor")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
 def campo_obrigatorio(mensagem, tipo=str):
     while True:
